@@ -1,5 +1,7 @@
 package com.psl.closecampus.controller;
 
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -92,7 +94,7 @@ public class EmployeeController {
 	}
 	
 	@RequestMapping(value="/personViolation",method = RequestMethod.POST)
-	public ModelAndView addViolatedPerson(@RequestBody PersonViolation personViolation){
+	public ModelAndView addViolatedPerson(@RequestBody PersonViolation personViolation) throws IOException{
 		ModelAndView model = new ModelAndView();
 		employeeService.addViolatedPerson(personViolation);
 		model.addObject("personViolation", personViolation);

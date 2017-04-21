@@ -1,5 +1,7 @@
 package com.psl.closecampus.service;
 
+import java.io.IOException;
+
 import com.psl.closecampus.dao.IEmployeeRegisterDao;
 import com.psl.closecampus.entity.Employee;
 import com.psl.closecampus.entity.PersonViolation;
@@ -35,7 +37,7 @@ public class EmployeeService {
 		return employeeRegisterDao.getViolatedPerson(mac_addr);
 	}
 
-	public void addViolatedPerson(PersonViolation personViolation){
+	public void addViolatedPerson(PersonViolation personViolation) throws IOException{
 		employeeRegisterDao.addViolatedPerson(personViolation);
 	}
 

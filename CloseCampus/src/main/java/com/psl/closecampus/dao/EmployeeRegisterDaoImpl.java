@@ -1,11 +1,18 @@
 package com.psl.closecampus.dao;
 
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Properties;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
+import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClient;
+import com.psl.closecampus.emailservice.PostManImpl;
 import com.psl.closecampus.entity.Employee;
 import com.psl.closecampus.entity.PersonViolation;
 
@@ -80,12 +87,30 @@ public class EmployeeRegisterDaoImpl implements IEmployeeRegisterDao {
 	}
 
 	@Override
-	public void addViolatedPerson(PersonViolation personViolation) {
-		String sql = "insert into person_violation_details values('"+personViolation.getMac_addr()+"','"+personViolation.getEntry_time()+"')";
+	public void addViolatedPerson(PersonViolation personViolation) throws IOException {
+		System.out.println("Gonna add record into db");
+		String sql = "insert into person_violation_details values('"+personViolation.getMac_addr()+"',sysdate())";
 		jdbcTemplate.update(sql);
+		System.out.println("Record Added");
+		PostManImpl postManImpl = new PostManImpl(createSimpleEmailService());
+		System.out.println("Postman Service");
+		postManImpl.withFrom("patilsurendra16@gmail.com").withTo("prem.kamal300@gmail.com").withSubject("Closed Campus Test Mail").withBody("Violated Person added \n Mac address : "+personViolation.getMac_addr()+"\n Entry Time : "+personViolation.getMac_addr()).send();
 		System.out.println("Violated Person inserted");
 	}
 
+	private AWSCredentials createCredentials() throws IOException{
+		
+		Properties properties = new Properties();
+		properties.load(getClass().getClassLoader().getResourceAsStream("aws.properties"));
+		System.out.println(properties.getProperty("aws.accessKey"));
+		AWSCredentials awsCredentials = new BasicAWSCredentials("Administrator","u7zwYrT6XCU");
+		//properties.getProperty(Administr), properties.getProperty("aws.secretKey"
+		return awsCredentials;
+	}
 	
+	
+	private AmazonSimpleEmailService createSimpleEmailService() throws IOException{
+		return new AmazonSimpleEmailServiceClient(createCredentials());
+	}
 
 }
